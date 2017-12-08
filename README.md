@@ -169,7 +169,8 @@ require("src.utils").hello() -- -> "World"
 
 #### Services section
 
-Section describing Services and related scripting logic for the Solution.
+Section defines Services configuration and related scripting logic for the Solution.
+Services defined with below section will get configured for the solution.
 
 ```yaml
 services:
@@ -184,16 +185,17 @@ location  | string      | `services`                     | Root folder name cont
 include   | string/list | `'**/*.lua'`                   | Pattern (or list of patterns) to select files in the location directory.<br>The pattern search is relative to the `location` folder. | `'**/*.lua'`
 exclude   | list | `['*_test.lua', '*_spec.lua']` | Pattern allowing to ignore files from the selection.                                                                                 | `[]`
 
-##### File content
+##### _.lua_ Event logic files content
 
-Selected file needs to contain valid Lua script. The service and event can be defined using the following Lua comment to define multiple event handlers in a single file:
+Selected file needs to contain valid Lua scripts used for service event handlers logic. Scripts are triggered when the relevant Murano event occurs.
+The service and event can be defined using the following Lua comment to define multiple event handlers in a single file:
 
 ```lua
 --#EVENT <service_alias> <event_type>
 -- Custom logic goes here
 ```
 
-**Example: ./services/yyy/xxx.lua**
+**Example: [./services/yyy/xxx.lua](./services/yyy/xxx.lua)**
 
 ```lua
 --#EVENT user account
@@ -205,12 +207,28 @@ print(request.message)
 
 If the EVENT tag is missing the file structure is used to represent the service and event as follows.<br>`./services/<service_alias>_<event_type>.lua`
 
-**Examples:**
-
-- ./services/user_account.lua
+**Examples: [./services/user_account.lua](./services/user_account.lua)**
 
 ```lua
 print(event.email)
 ```
 
 Find more information regarding eventhandlers on the [Murano Scripting Reference](http://docs.exosite.com/articles/working-with-apis/#script-execution).
+
+##### _.yaml_ Service configuration files content
+
+Specific configuration parameters can be defined per service using _<service_alias>.yaml_ files in the defined location directory.
+
+Content of the files needs to match the target service configuration parameters.
+
+**Examples: [./services/device2.yaml](./services/device2.yaml)**
+
+```lua
+protocol:
+  name: onep
+provisioning:
+  auth_type: token
+```
+
+This method can also be used with an empty file to configured service which doesn't have any script logic or specific configuration parameters.
+Example: [./services/twilio.yaml](./services/twilio.yaml).
