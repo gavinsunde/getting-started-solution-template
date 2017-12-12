@@ -11,20 +11,20 @@ getting-started-solution-template/
 ├── assets/index.html
 ├── endpoints/example.lua
 ├── modules/example.lua
-├── services/user.lua
+├── services/<service_event>.lua | <service>.yaml
 ├── init.lua
 └── murano.yaml
 ```
 
-## Template format (murano.yaml)
+## Template format [murano.yaml](./murano.yaml)
 
-We can see the example in [murano.yaml](murano.yaml).
+**murano.yaml** is the only required component of a template and defines the solution resources.
 
 ### Required sections for the template
 
 Section name  | Format | Example                                  | Description
 --------------|--------|------------------------------------------|----------------------------------
-formatversion | string | `formatversion: 1.0.0`                   | The format version of this file.
+formatversion | string | `formatversion: 1.0.0`                   | The format version of this file. Must be "1.0.0".
 info          | object | [See in the info section](#info-section) | Metadata about this project.
 
 ### Optional sections for the template
@@ -37,7 +37,7 @@ assets       | object | [See in the assets section](#assets-section)       | Tar
 endpoints    | object | [See in the endpoints section](#endpoints-section) | Target source files of the webservice back-end endpoints.
 modules      | object | [See in the modules section](#modules-section)     | Target reusable module source files.
 services     | object | [See in the services section](#services-section)   | Target source files of internal services event handlers.
-init_script  | string | [`./init.lua`](init.lua)                           | Relative Path of the solution initialization script file.<br>This script will get executed once at the end of the template setup and allow to initialize the solution configuration and data.<br>The file must contain valid lua script. Template Lua Modules are accessible.
+init_script  | string | [`./init.lua`](init.lua)                           | Relative Path of the solution initialization script file.<br>This script will be executed once at the end of the template setup and allow to initialize the solution configuration and data.<br>The file must contain valid lua script and may includes calls to other Lua Modules.
 
 #### Info section
 
@@ -102,7 +102,7 @@ cors      | object      | `{'origin': ['http://localhost:*']}` | Cross origin re
 
 ##### File content
 
-Selected files need to contains valid Lua script. Endpoints are defined using a Lua comment header as follows:
+Selected files need to contains valid Lua script. Endpoints are defined using a Lua comment header as follows (The file name is not relevant):
 
 ```lua
 --#ENDPOINT <method> <path>[ <content_type>]
@@ -111,11 +111,12 @@ Selected files need to contains valid Lua script. Endpoints are defined using a 
 
 The `content_type` is optional and `application/json` is the default value.
 
-**Example: ./endpoints/api/userEndpoints.lua**
+**Example: [./endpoints/example.lua](./endpoints/example.lua)**
 
 ```lua
 --#ENDPOINT POST /api/user
 print("Creating a new user")
+
 --#ENDPOINT GET /api/user/{userId}
 print("Fetch a given user" .. request.parameters.userId)
 ```
@@ -143,15 +144,16 @@ exclude   | list        | `['*_test.lua', '*_spec.lua']` | Pattern allowing to i
 
 Selected file needs to contain valid Lua script and should be structured as standard Lua modules (http://lua-users.org/wiki/ModulesTutorial).
 
-**Important note:**
-- All variable & function should be tagged as *local*.
-- The trailing *return* statement is required
+**Important notes & best practices:**
+- All variables & functions should be tagged as *local*.
+- The trailing *return* statement is required.
 - To avoid confusion with Murano Services, module file name should start with a lower-case letter.
 - The module file relative path matters.
+- As convention name your module object after the module name.
 
 Find more information regarding modules on the [Murano Scripting Reference](http://docs.exosite.com/articles/working-with-apis/#modules).
 
-**Example: ./modules/src/utils.lua**
+**Example: [./modules/src/utils.lua](./modules/src/utils.lua)**
 
 ```lua
 local utils = { variable = "World"}
