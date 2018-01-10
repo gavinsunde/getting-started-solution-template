@@ -7,11 +7,11 @@ provisioning:
 
 resources:
   temperature:
-    format: float
+    format: number
   humidity:
-    format: float
+    format: number
   state:
-    format: integer
+    format: number
     initial: 0
   uptime:
-    format: integer
+    format: number
